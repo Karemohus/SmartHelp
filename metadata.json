@@ -1,0 +1,8 @@
+{
+  "name": "Smart FAQ and Ticketing System",
+  "description": "A user-friendly interface for customers to find answers to frequently asked questions and submit support tickets if their issue is not resolved. Features an AI-powered assistant to suggest relevant FAQs in real-time.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "prompt": ""
+}

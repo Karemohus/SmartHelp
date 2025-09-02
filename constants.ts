@@ -1,0 +1,397 @@
+
+
+import { Faq, Ticket, Category, Task, User, UserRole, SubDepartment, Vehicle, VehicleLicense, Violation, ViolationRule } from './types';
+
+export const INITIAL_USERS: User[] = [
+  {
+    id: 'admin_01',
+    username: 'karim',
+    employeeId: 'A001',
+    password: 'karim123',
+    role: UserRole.Admin,
+    designation: 'System Administrator',
+  },
+  {
+    id: 'super_01',
+    username: 'ship_super',
+    employeeId: 'S101',
+    password: 'password123',
+    role: UserRole.Supervisor,
+    assignedCategoryIds: ['shipping', 'returns', 'vehicles'],
+    designation: 'Shipping & Fleet Supervisor',
+  },
+  {
+    id: 'super_02',
+    username: 'order_super',
+    employeeId: 'S102',
+    password: 'password123',
+    role: UserRole.Supervisor,
+    assignedCategoryIds: ['orders', 'payments'],
+    designation: 'Order Supervisor',
+  },
+  {
+    id: 'super_03',
+    username: 'tech_super',
+    employeeId: 'S103',
+    password: 'password123',
+    role: UserRole.Supervisor,
+    adminPermissions: ['view_all_dashboards', 'approve_staff_requests', 'view_user_activity'], // This supervisor has specific admin-level permissions
+    assignedCategoryIds: ['technical', 'account', 'general'],
+    designation: 'Lead Technical Supervisor',
+  },
+  {
+    id: 'employee_01',
+    username: 'ahmed_emp',
+    employeeId: 'E201',
+    password: 'password123',
+    role: UserRole.Employee,
+    supervisorId: 'super_01', // This employee reports to ship_super
+    assignedSubDepartmentIds: ['shipping_domestic'], // Assigned to a specific sub-department
+    permissions: ['handle_tickets', 'handle_tasks'], // And has two specific abilities
+    designation: 'Support Specialist',
+  },
+  {
+    id: 'driver_01',
+    username: 'saeed_driver',
+    employeeId: 'D301',
+    password: 'password123',
+    role: UserRole.Driver,
+    supervisorId: 'super_01',
+    designation: 'Delivery Driver',
+    drivingLicenseNumber: 'DL12345678',
+    drivingLicenseExpiry: new Date(new Date().setFullYear(new Date().getFullYear() + 2)).toISOString(),
+    currentLocation: { lat: 24.7136, lng: 46.6753 }, // Riyadh
+    currentSpeed: 125, // Set high for testing speeding violations
+  }
+];
+
+
+export const INITIAL_CATEGORIES: Category[] = [
+  { 
+    id: 'shipping', 
+    name: 'Shipping', 
+    slug: 'shipping-info',
+    isPublic: true,
+    generalContext: 'We offer standard shipping (5-7 business days), expedited shipping (2-3 business days), and overnight shipping. Tracking numbers are sent via email once the order ships. Costs vary based on location and weight.'
+  },
+  { id: 'orders', name: 'Orders', slug: 'order-status', isPublic: true, generalContext: 'Information about placing, modifying, or canceling orders. Customers can view their order history in their account.' },
+  { 
+    id: 'payments', 
+    name: 'Payments', 
+    slug: 'payment-help',
+    isPublic: true,
+    generalContext: 'We accept all major credit cards, PayPal, and Apple Pay. If a discount code is not working, please ensure it is typed correctly and has not expired.'
+  },
+  { id: 'returns', name: 'Returns & Exchanges', slug: 'returns-policy', isPublic: true, generalContext: 'We have a 30-day return policy for most items. Items must be in original condition. Start a return from your order history page.'},
+  { id: 'account', name: 'Account Management', slug: 'my-account', isPublic: false, generalContext: 'Help with account creation, password resets, and managing personal information.' },
+  { id: 'technical', name: 'Technical Support', isPublic: false, generalContext: 'Troubleshooting for our electronic products. Check for software updates and basic connection issues first.' },
+  { 
+    id: 'vehicles', 
+    name: 'Vehicle Inquiries', 
+    slug: 'vehicle-inquiries',
+    isPublic: true, 
+    generalContext: 'Information about company vehicles, maintenance schedules, license renewals, and driver policies.' 
+  },
+  { id: 'general', name: 'General Inquiries', isPublic: true },
+];
+
+export const INITIAL_SUB_DEPARTMENTS: SubDepartment[] = [
+    { id: 'shipping_domestic', name: 'Domestic Shipping', supervisorId: 'super_01', mainCategoryId: 'shipping' },
+    { id: 'shipping_international', name: 'International Shipping', supervisorId: 'super_01', mainCategoryId: 'shipping' },
+    { id: 'returns_damaged', name: 'Damaged Items', supervisorId: 'super_01', mainCategoryId: 'returns' },
+    { id: 'returns_policy', name: 'Policy Questions', supervisorId: 'super_01', mainCategoryId: 'returns' },
+    { id: 'orders_status', name: 'Order Status', supervisorId: 'super_02', mainCategoryId: 'orders' },
+    { id: 'orders_modify', name: 'Modify or Cancel Order', supervisorId: 'super_02', mainCategoryId: 'orders' },
+    { id: 'payments_cc', name: 'Credit Card Issues', supervisorId: 'super_02', mainCategoryId: 'payments' },
+    { id: 'payments_paypal', name: 'PayPal Issues', supervisorId: 'super_02', mainCategoryId: 'payments' },
+    // Vehicle Sub-departments
+    { id: 'vehicle_maintenance', name: 'Maintenance & Follow-up', supervisorId: 'super_01', mainCategoryId: 'vehicles' },
+    { id: 'vehicle_licensing', name: 'Licensing', supervisorId: 'super_01', mainCategoryId: 'vehicles' },
+    { id: 'vehicle_drivers', name: 'Drivers & Violations', supervisorId: 'super_01', mainCategoryId: 'vehicles' },
+];
+
+
+export const INITIAL_FAQS: Faq[] = [
+  // Shipping
+  {
+    id: 1,
+    categoryId: "shipping",
+    subDepartmentId: "shipping_domestic",
+    question: "What are your shipping options?",
+    answer: "We offer standard shipping (5-7 business days), expedited shipping (2-3 business days), and overnight shipping. Costs vary based on your location and the weight of your order.",
+    attachment: null,
+    createdAt: "2023-10-26T10:00:00Z",
+    updatedAt: "2023-10-26T10:00:00Z",
+    viewCount: 0,
+    createdByUserId: 'admin_01',
+    updatedByUserId: 'admin_01',
+    satisfaction: 0,
+    dissatisfaction: 0,
+  },
+   {
+    id: 6,
+    categoryId: "shipping",
+    subDepartmentId: "shipping_international",
+    question: "Do you ship internationally?",
+    answer: "Yes, we ship to over 50 countries worldwide. International shipping costs and times vary by destination. Please proceed to checkout to see the options available for your country.",
+    attachment: null,
+    createdAt: "2023-11-01T12:00:00Z",
+    updatedAt: "2023-11-01T12:00:00Z",
+    viewCount: 0,
+    createdByUserId: 'admin_01',
+    updatedByUserId: 'admin_01',
+    satisfaction: 0,
+    dissatisfaction: 0,
+  },
+  // Orders
+  {
+    id: 2,
+    categoryId: "orders",
+    subDepartmentId: "orders_status",
+    question: "How can I track my order?",
+    answer: "Once your order has shipped, you will receive an email with a tracking number. You can use this number on the carrier's website to track your package.",
+    attachment: null,
+    createdAt: "2023-10-25T11:30:00Z",
+    updatedAt: "2023-10-25T11:30:00Z",
+    viewCount: 0,
+    createdByUserId: 'admin_01',
+    updatedByUserId: 'admin_01',
+    satisfaction: 0,
+    dissatisfaction: 0,
+  },
+  {
+    id: 7,
+    categoryId: "orders",
+    subDepartmentId: "orders_modify",
+    question: "Can I cancel or modify my order?",
+    answer: "You can cancel or modify an order within 30 minutes of placing it. Go to your order history and select the 'Cancel' or 'Modify' option. After this window, the order is sent to our warehouse and cannot be changed.",
+    attachment: null,
+    createdAt: "2023-11-02T15:00:00Z",
+    updatedAt: "2023-11-02T15:00:00Z",
+    viewCount: 0,
+    createdByUserId: 'admin_01',
+    updatedByUserId: 'admin_01',
+    satisfaction: 0,
+    dissatisfaction: 0,
+  },
+  // Payments
+  {
+    id: 3,
+    categoryId: "payments",
+    question: "What payment methods do you accept?",
+    answer: "We accept all major credit cards (Visa, MasterCard, American Express), PayPal, and Apple Pay.",
+    attachment: null,
+    createdAt: "2023-10-24T14:00:00Z",
+    updatedAt: "2023-10-24T14:00:00Z",
+    viewCount: 0,
+    createdByUserId: 'admin_01',
+    updatedByUserId: 'admin_01',
+    satisfaction: 0,
+    dissatisfaction: 0,
+  },
+  {
+    id: 8,
+    categoryId: "payments",
+    question: "Why is my discount code not working?",
+    answer: "Please check that the discount code was entered correctly and has not expired. Some codes are for one-time use or apply only to specific products. If you still have trouble, please contact support.",
+    attachment: null,
+    createdAt: "2023-11-03T10:00:00Z",
+    updatedAt: "2023-11-03T10:00:00Z",
+    viewCount: 0,
+    createdByUserId: 'admin_01',
+    updatedByUserId: 'admin_01',
+    satisfaction: 0,
+    dissatisfaction: 0,
+  },
+  // Account
+  {
+    id: 4,
+    categoryId: "account",
+    question: "How do I reset my password?",
+    answer: "You can reset your password by clicking the 'Forgot Password' link on the login page. An email will be sent to you with instructions on how to create a new password.",
+    attachment: null,
+    createdAt: "2023-10-23T09:00:00Z",
+    updatedAt: "2023-10-23T09:00:00Z",
+    viewCount: 0,
+    createdByUserId: 'admin_01',
+    updatedByUserId: 'admin_01',
+    satisfaction: 0,
+    dissatisfaction: 0,
+  },
+  // Returns
+  {
+    id: 9,
+    categoryId: "returns",
+    subDepartmentId: "returns_policy",
+    question: "What is your return policy?",
+    answer: "We offer a 30-day return policy on all unopened and unused products. Please visit our returns page for more detailed information and to initiate a return.",
+    attachment: null,
+    createdAt: "2023-10-22T16:45:00Z",
+    updatedAt: "2023-11-05T11:00:00Z",
+    viewCount: 0,
+    createdByUserId: 'admin_01',
+    updatedByUserId: 'admin_01',
+    satisfaction: 0,
+    dissatisfaction: 0,
+  },
+   {
+    id: 10,
+    categoryId: "returns",
+    question: "How do I start a return or exchange?",
+    answer: "To start a return or exchange, please log into your account, go to your order history, and select the 'Return Items' button next to your order. Follow the on-screen instructions to receive your return shipping label.",
+    attachment: null,
+    createdAt: "2023-11-04T09:20:00Z",
+    updatedAt: "2023-11-04T09:20:00Z",
+    viewCount: 0,
+    createdByUserId: 'admin_01',
+    updatedByUserId: 'admin_01',
+    satisfaction: 0,
+    dissatisfaction: 0,
+  },
+  // Technical Support
+  {
+    id: 11,
+    categoryId: "technical",
+    question: "My product won't turn on. What should I do?",
+    answer: "First, ensure the product is fully charged by connecting it to the charger for at least 60 minutes. Press and hold the power button for 10 seconds to perform a hard reset. If it still doesn't turn on, please contact our support team by opening a ticket in the 'Technical Support' category.",
+    attachment: null,
+    createdAt: "2023-11-05T14:00:00Z",
+    updatedAt: "2023-11-05T14:00:00Z",
+    viewCount: 0,
+    createdByUserId: 'admin_01',
+    updatedByUserId: 'admin_01',
+    satisfaction: 0,
+    dissatisfaction: 0,
+  },
+  // General
+  {
+    id: 5,
+    categoryId: "general",
+    question: "Do you have a physical store?",
+    answer: "Currently, we are an online-only retailer. This allows us to offer the best prices and a wider selection of products. All orders are shipped directly from our warehouse.",
+    attachment: null,
+    createdAt: "2023-10-22T16:45:00Z",
+    updatedAt: "2023-10-22T16:45:00Z",
+    viewCount: 0,
+    createdByUserId: 'admin_01',
+    updatedByUserId: 'admin_01',
+    satisfaction: 0,
+    dissatisfaction: 0,
+  },
+  // Vehicle Inquiries
+  {
+    id: 12,
+    categoryId: "vehicles",
+    subDepartmentId: "vehicle_maintenance",
+    question: "How do I check my car's maintenance schedule?",
+    answer: "You can view the upcoming maintenance schedule for any vehicle by navigating to the Vehicles > Fleet Management section. Select a vehicle to see its detailed maintenance history and future service dates.",
+    attachment: null,
+    createdAt: "2024-01-01T10:00:00Z",
+    updatedAt: "2024-01-01T10:00:00Z",
+    viewCount: 0,
+    createdByUserId: 'admin_01',
+    updatedByUserId: 'admin_01',
+    satisfaction: 0,
+    dissatisfaction: 0,
+  },
+  {
+    id: 13,
+    categoryId: "vehicles",
+    subDepartmentId: "vehicle_licensing",
+    question: "When is my vehicle's license due for renewal?",
+    answer: "The 'Licensing' tab in the Vehicle management section provides a complete overview of all vehicle license and insurance expiry dates. The system will automatically flag any documents that are expiring soon or have already expired.",
+    attachment: null,
+    createdAt: "2024-01-01T10:05:00Z",
+    updatedAt: "2024-01-01T10:05:00Z",
+    viewCount: 0,
+    createdByUserId: 'admin_01',
+    updatedByUserId: 'admin_01',
+    satisfaction: 0,
+    dissatisfaction: 0,
+  },
+  {
+    id: 14,
+    categoryId: "vehicles",
+    subDepartmentId: "vehicle_drivers",
+    question: "How can I report a traffic violation?",
+    answer: "Traffic violations can be logged against a specific driver and vehicle in the 'Drivers & Tracking' tab. You will need to provide the date, description, and amount of the violation.",
+    attachment: null,
+    createdAt: "2024-01-01T10:10:00Z",
+    updatedAt: "2024-01-01T10:10:00Z",
+    viewCount: 0,
+    createdByUserId: 'admin_01',
+    updatedByUserId: 'admin_01',
+    satisfaction: 0,
+    dissatisfaction: 0,
+  },
+  {
+    id: 15,
+    categoryId: "vehicles",
+    subDepartmentId: "vehicle_maintenance",
+    question: "What do I do if my assigned vehicle breaks down?",
+    answer: "If your vehicle breaks down, immediately ensure you are in a safe location. Then, report the issue by creating a new maintenance request under the 'Fleet Management' section. Change the vehicle's status to 'In Maintenance' and provide details of the issue.",
+    attachment: null,
+    createdAt: "2024-01-01T10:15:00Z",
+    updatedAt: "2024-01-01T10:15:00Z",
+    viewCount: 0,
+    createdByUserId: 'admin_01',
+    updatedByUserId: 'admin_01',
+    satisfaction: 0,
+    dissatisfaction: 0,
+  }
+];
+
+// All initial tickets have been removed to reset analytics and start the application with a clean slate.
+export const INITIAL_TICKETS: Ticket[] = [];
+
+export const INITIAL_TASKS: Task[] = [];
+
+export const INITIAL_VEHICLES: Vehicle[] = [
+  {
+    id: 'veh_1',
+    make: 'Toyota',
+    model: 'Hilux',
+    year: 2023,
+    plateNumber: '123 ABC',
+    vin: '123456789TOYOTA',
+    status: 'active',
+    photos: [],
+    assignedDriverId: 'driver_01',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    notes: 'Standard delivery truck. Equipped with GPS tracking.',
+    // Set a past date to test the missed maintenance violation
+    nextMaintenanceDate: new Date(new Date().setMonth(new Date().getMonth() - 1)).toISOString(),
+  }
+];
+export const INITIAL_VEHICLE_LICENSES: VehicleLicense[] = [
+    {
+        id: 'lic_1',
+        vehicleId: 'veh_1',
+        licenseNumber: 'L12345',
+        issueDate: new Date(new Date().setFullYear(new Date().getFullYear() - 1)).toISOString(),
+        expiryDate: new Date(new Date().setFullYear(new Date().getFullYear() + 2)).toISOString(),
+        insurancePolicyNumber: 'INS98765',
+        insuranceExpiryDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString(),
+    }
+];
+export const INITIAL_VIOLATIONS: Violation[] = [];
+
+export const INITIAL_VIOLATION_RULES: ViolationRule[] = [
+    {
+        id: 'rule_speeding',
+        type: 'speeding',
+        threshold: 120, // km/h
+        fineAmount: 50,
+        description: 'Exceeded speed limit of {threshold} km/h, recorded at {speed} km/h.',
+        isEnabled: true,
+    },
+    {
+        id: 'rule_maintenance',
+        type: 'missed_maintenance',
+        threshold: 0, // days overdue (0 means any day past is a violation)
+        fineAmount: 100,
+        description: 'Missed scheduled maintenance due on {date}.',
+        isEnabled: true,
+    }
+];
