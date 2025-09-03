@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { ViolationRule, ToastMessage } from '../../../types';
+import { useLanguage } from '../../../context/LanguageContext';
 
 interface ViolationRulesEditorProps {
     violationRules: ViolationRule[];
@@ -9,7 +10,7 @@ interface ViolationRulesEditorProps {
 }
 
 const ViolationRulesEditor: React.FC<ViolationRulesEditorProps> = ({ violationRules, setViolationRules, addToast }) => {
-
+    const { t } = useLanguage();
     const handleRuleChange = (ruleId: string, field: keyof ViolationRule, value: any) => {
         setViolationRules(prevRules => 
             prevRules.map(rule => 
@@ -57,9 +58,9 @@ const ViolationRulesEditor: React.FC<ViolationRulesEditorProps> = ({ violationRu
                                 <div className="relative">
                                     <input type="checkbox" id={`toggle-${rule.id}`} className="sr-only" checked={rule.isEnabled} onChange={(e) => handleRuleChange(rule.id, 'isEnabled', e.target.checked)} />
                                     <div className={`block w-10 h-6 rounded-full transition ${rule.isEnabled ? 'bg-green-500' : 'bg-slate-300'}`}></div>
-                                    <div className={`dot absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${rule.isEnabled ? 'transform translate-x-4' : ''}`}></div>
+                                    <div className={`dot absolute start-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${rule.isEnabled ? 'transform translate-x-4' : ''}`}></div>
                                 </div>
-                                <div className="ml-2 text-sm font-medium text-slate-600">{rule.isEnabled ? 'Enabled' : 'Disabled'}</div>
+                                <div className="ms-2 text-sm font-medium text-slate-600">{rule.isEnabled ? t('active') : t('inactive')}</div>
                             </label>
                         </div>
                         
@@ -104,7 +105,7 @@ const ViolationRulesEditor: React.FC<ViolationRulesEditorProps> = ({ violationRu
                     onClick={handleSave}
                     className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                 >
-                    Save Rules
+                    {t('save_changes')}
                 </button>
             </div>
         </div>

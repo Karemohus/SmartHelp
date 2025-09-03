@@ -61,10 +61,13 @@ const ManageTickets: React.FC<ManageTicketsProps> = ({ tickets, setTickets, faqs
 
     if (promoteToFaq) {
       const now = new Date().toISOString();
+      // Fix: Add missing question_ar and answer_ar properties to match the Faq type.
       const newFaq: Faq = {
         id: faqs.length > 0 ? Math.max(...faqs.map(f => f.id)) + 1 : 1,
         question: replyingTicket.subject,
+        question_ar: replyingTicket.subject, // Admin should translate this
         answer: replyText,
+        answer_ar: replyText, // Admin should translate this
         categoryId: newFaqCategory,
         attachment: adminAttachment,
         createdAt: now,

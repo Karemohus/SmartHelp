@@ -5,6 +5,7 @@ import { Type } from "@google/genai";
 export interface SubDepartment {
   id: string;
   name: string;
+  name_ar: string;
   supervisorId: string;
   mainCategoryId: string;
 }
@@ -77,6 +78,7 @@ export interface User {
     password?: string; // Stored in backend state (localStorage), but not in loggedInUser session state
     role: UserRole;
     designation?: string;
+    designation_ar?: string;
     adminPermissions?: AdminPermission[]; // For supervisors with special admin-level permissions
     assignedCategoryIds?: string[]; // For regular supervisors, list of category IDs they manage
     assignedSubDepartmentIds?: string[]; // For employees, list of sub-department IDs they are assigned to
@@ -93,9 +95,11 @@ export interface User {
 export interface Category {
     id: string;
     name: string;
+    name_ar: string;
     slug?: string;
     isPublic: boolean;
     generalContext?: string; // General answer/context for the category for AI suggestions
+    generalContext_ar?: string;
 }
 
 export interface Faq {
@@ -103,7 +107,9 @@ export interface Faq {
   categoryId: string;
   subDepartmentId?: string | null;
   question: string;
+  question_ar: string;
   answer: string;
+  answer_ar: string;
   attachment?: Attachment | null;
   createdAt: string;
   updatedAt: string;

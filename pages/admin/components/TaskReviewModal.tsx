@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Task, User } from '../../../types';
 import AttachmentPreview from '../../../components/AttachmentPreview';
 import CheckCircleIcon from '../../../components/icons/CheckCircleIcon';
+import { useLanguage } from '../../../context/LanguageContext';
 
 
 interface TaskReviewModalProps {
@@ -14,6 +15,7 @@ interface TaskReviewModalProps {
 }
 
 const TaskReviewModal: React.FC<TaskReviewModalProps> = ({ task, onClose, onApprove, onReject, loggedInUser }) => {
+    const { t } = useLanguage();
     const [rejectionFeedback, setRejectionFeedback] = useState('');
 
     const handleReject = () => {
@@ -73,13 +75,13 @@ const TaskReviewModal: React.FC<TaskReviewModalProps> = ({ task, onClose, onAppr
                         onClick={handleReject}
                         disabled={!rejectionFeedback.trim()}
                         className="px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700 transition-colors disabled:bg-slate-300 disabled:cursor-not-allowed">
-                        Reject & Re-assign
+                        {t('reject')} & Re-assign
                     </button>
                     <button onClick={() => onApprove(task.id)} className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 ${approveButtonClass}`}>
                          <CheckCircleIcon className="w-5 h-5"/>
                          {approveButtonText}
                     </button>
-                    <button type="button" onClick={onClose} className="text-sm text-slate-600 hover:text-slate-800">Cancel</button>
+                    <button type="button" onClick={onClose} className="text-sm text-slate-600 hover:text-slate-800">{t('cancel')}</button>
                 </div>
             </div>
         </div>

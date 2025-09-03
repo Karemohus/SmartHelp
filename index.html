@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -7,6 +7,9 @@
     <title>Smart FAQ & Ticketing</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
   <script type="importmap">
 {
   "imports": {
@@ -19,6 +22,9 @@
 }
 </script>
 <style>
+  html[dir="rtl"] {
+    font-family: 'Cairo', sans-serif;
+  }
   @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -58,6 +64,12 @@
       text-align: right;
       border-bottom: 1px solid #f1f5f9; /* slate-100 */
     }
+    html[dir="ltr"] .responsive-table td {
+        text-align: right;
+    }
+    html[dir="rtl"] .responsive-table td {
+        text-align: left;
+    }
     .responsive-table tr:last-child td:last-child {
         border-bottom: none;
     }
@@ -68,6 +80,11 @@
       margin-right: 1rem;
       color: #475569; /* slate-600 */
       flex-shrink: 0;
+    }
+    html[dir="rtl"] .responsive-table td::before {
+        text-align: right;
+        margin-right: 0;
+        margin-left: 1rem;
     }
     .responsive-table td .truncate {
         white-space: normal;

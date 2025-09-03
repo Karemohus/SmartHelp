@@ -1,7 +1,10 @@
 
+
 import React, { useState, useEffect } from 'react';
 import { User, Category, UserRole, AdminPermission } from '../../../types';
-import { adminPermissionLabels } from '../utils';
+// Fix: Import getAdminPermissionLabels function instead of the non-existent adminPermissionLabels.
+import { getAdminPermissionLabels } from '../utils';
+import { useLanguage } from '../../../context/LanguageContext';
 
 interface SupervisorEditModalProps {
     userToEdit: User | null;
@@ -12,6 +15,10 @@ interface SupervisorEditModalProps {
 }
 
 const SupervisorEditModal: React.FC<SupervisorEditModalProps> = ({ userToEdit, allUsers, categories, onClose, onSave }) => {
+    // Fix: Use the useLanguage hook to get the translation function and generate the labels object.
+    const { t, language } = useLanguage();
+    const adminPermissionLabels = getAdminPermissionLabels(t);
+    
     const [username, setUsername] = useState('');
     const [employeeId, setEmployeeId] = useState('');
     const [designation, setDesignation] = useState('');
@@ -95,7 +102,7 @@ const SupervisorEditModal: React.FC<SupervisorEditModalProps> = ({ userToEdit, a
         onSave(savedUser);
     };
 
-    const modalTitle = userToEdit ? 'Edit Supervisor' : 'Add New Supervisor';
+    const modalTitle = userToEdit ? t('edit') + ' ' + t('nav_supervisors') : t('add') + ' ' + t('nav_supervisors');
     const hasFullAccess = grantedAdminPermissions.includes('view_all_dashboards');
 
     return (
@@ -107,25 +114,25 @@ const SupervisorEditModal: React.FC<SupervisorEditModalProps> = ({ userToEdit, a
                     <div className="space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label htmlFor="user-username" className="block text-sm font-medium text-slate-700 mb-1">Username</label>
+                                <label htmlFor="user-username" className="block text-sm font-medium text-slate-700 mb-1">{t('username')}</label>
                                 <input id="user-username" type="text" value={username} onChange={e => setUsername(e.target.value)} className="w-full border border-slate-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500" required />
                             </div>
                             <div>
-                                <label htmlFor="user-employee-id" className="block text-sm font-medium text-slate-700 mb-1">Employee ID</label>
+                                <label htmlFor="user-employee-id" className="block text-sm font-medium text-slate-700 mb-1">{t('employee_id_short')}</label>
                                 <input id="user-employee-id" type="text" value={employeeId} onChange={e => setEmployeeId(e.target.value)} placeholder="e.g., A123" className="w-full border border-slate-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500" />
                             </div>
                         </div>
                         <div>
-                            <label htmlFor="user-designation" className="block text-sm font-medium text-slate-700 mb-1">Job Title / Designation</label>
+                            <label htmlFor="user-designation" className="block text-sm font-medium text-slate-700 mb-1">{t('designation')}</label>
                             <input id="user-designation" type="text" value={designation} onChange={e => setDesignation(e.target.value)} placeholder="e.g., Shipping Supervisor" className="w-full border border-slate-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500" />
                         </div>
                         <div>
-                            <label htmlFor="user-password" className="block text-sm font-medium text-slate-700 mb-1">{userToEdit ? 'Set New Password' : 'Password'}</label>
+                            <label htmlFor="user-password" className="block text-sm font-medium text-slate-700 mb-1">{userToEdit ? 'Set New Password' : t('password')}</label>
                             <input id="user-password" type="password" value={password} onChange={e => setPassword(e.target.value)} placeholder={userToEdit ? "Leave blank to keep unchanged" : ""} className="w-full border border-slate-300 rounded-md p-2 focus:ring-blue-500 focus:border-blue-500" required={!userToEdit} />
                         </div>
 
                         <div className="pt-4 border-t mt-4">
-                            <label className="block text-sm font-medium text-slate-700 mb-2">Assigned Categories</label>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">{t('assigned_categories')}</label>
                             {hasFullAccess ? (
                                 <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-800">
                                     This user has 'View All Dashboards' permission, giving them access to all categories automatically.
@@ -141,7 +148,7 @@ const SupervisorEditModal: React.FC<SupervisorEditModalProps> = ({ userToEdit, a
                                                 onChange={() => handleCategoryToggle(cat.id)}
                                                 className="h-4 w-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500"
                                             />
-                                            <label htmlFor={`cat-${cat.id}`} className="ml-2 text-sm text-slate-700 truncate">{cat.name}</label>
+                                            <label htmlFor={`cat-${cat.id}`} className="ms-2 text-sm text-slate-700 truncate">{language === 'ar' ? cat.name_ar : cat.name}</label>
                                         </div>
                                     ))}
                                 </div>
@@ -149,7 +156,7 @@ const SupervisorEditModal: React.FC<SupervisorEditModalProps> = ({ userToEdit, a
                         </div>
 
                         <div className="pt-4 border-t mt-4">
-                           <label className="block text-sm font-medium text-slate-700 mb-2">Grant Admin-Level Permissions</label>
+                           <label className="block text-sm font-medium text-slate-700 mb-2">{t('granted_permissions')}</label>
                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 {(Object.keys(adminPermissionLabels) as AdminPermission[]).map(key => (
                                     <div key={key} className="relative flex items-start">
@@ -162,7 +169,7 @@ const SupervisorEditModal: React.FC<SupervisorEditModalProps> = ({ userToEdit, a
                                                 className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                                             />
                                         </div>
-                                        <div className="ml-3 text-sm">
+                                        <div className="ms-3 text-sm">
                                             <label htmlFor={`perm-${key}`} className="font-medium text-gray-700">{adminPermissionLabels[key].title}</label>
                                             <p className="text-xs text-gray-500">{adminPermissionLabels[key].description}</p>
                                         </div>
@@ -173,8 +180,8 @@ const SupervisorEditModal: React.FC<SupervisorEditModalProps> = ({ userToEdit, a
 
                     </div>
                     <div className="mt-8 flex justify-end gap-4">
-                        <button type="button" onClick={onClose} className="px-4 py-2 bg-slate-200 rounded-md text-sm font-medium hover:bg-slate-300 transition-colors">Cancel</button>
-                        <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">Save Changes</button>
+                        <button type="button" onClick={onClose} className="px-4 py-2 bg-slate-200 rounded-md text-sm font-medium hover:bg-slate-300 transition-colors">{t('cancel')}</button>
+                        <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-md text-sm font-medium hover:bg-blue-700 transition-colors">{t('save_changes')}</button>
                     </div>
                 </form>
             </div>

@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { useLanguage } from '../context/LanguageContext';
 
 interface ConfirmationModalProps {
   title: string;
@@ -10,7 +11,11 @@ interface ConfirmationModalProps {
   onClose: () => void;
 }
 
-const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ title, message, confirmText = 'Confirm', cancelText = 'Cancel', onConfirm, onClose }) => {
+const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ title, message, confirmText, cancelText, onConfirm, onClose }) => {
+  const { language, t } = useLanguage();
+  const confirmButtonText = confirmText || t('confirm');
+  const cancelButtonText = cancelText || t('cancel');
+
   // Prevent background scroll
   React.useEffect(() => {
     const originalStyle = window.getComputedStyle(document.body).overflow;
@@ -31,7 +36,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ title, message, c
       <div 
         className="bg-white rounded-lg shadow-xl p-6 md:p-8 max-w-md w-full transform transition-all animate-scale-in" 
         onClick={e => e.stopPropagation()}
-        dir="ltr"
+        dir={language === 'ar' ? 'rtl' : 'ltr'}
       >
         <h3 id="confirmation-title" className="text-xl font-bold text-slate-800 text-center">{title}</h3>
         <p className="text-slate-600 my-4 text-center">{message}</p>
@@ -40,13 +45,13 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({ title, message, c
             onClick={onClose}
             className="px-6 py-2 bg-slate-200 text-slate-800 rounded-md font-medium hover:bg-slate-300 transition-colors"
           >
-            {cancelText}
+            {cancelButtonText}
           </button>
           <button
             onClick={onConfirm}
             className="px-6 py-2 bg-red-600 text-white rounded-md font-medium hover:bg-red-700 transition-colors"
           >
-            {confirmText}
+            {confirmButtonText}
           </button>
         </div>
       </div>

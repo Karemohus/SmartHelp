@@ -11,6 +11,7 @@ import CategoryFaqView from './pages/CategoryFaqView';
 import ToastContainer from './components/ToastContainer';
 import NotificationModal from './components/NotificationModal';
 import { useDataStore } from './hooks/useDataStore';
+import { LanguageProvider, useLanguage } from './context/LanguageContext';
 
 function App() {
   const {
@@ -41,6 +42,8 @@ function App() {
     handleNotificationDismiss,
     handleNotificationNavigate,
   } = useDataStore();
+  
+  const { t } = useLanguage();
 
   return (
     <>
@@ -100,7 +103,7 @@ function App() {
         </main>
         <footer className="bg-slate-800 text-white mt-auto">
             <div className="container mx-auto py-4 px-4 sm:px-6 lg:px-8 text-center text-sm">
-                <p>&copy; {new Date().getFullYear()} {siteConfig.name} Inc. All rights reserved.</p>
+                <p>&copy; {new Date().getFullYear()} {siteConfig.name} {t('inc_all_rights_reserved')}</p>
             </div>
         </footer>
       </div>
@@ -108,10 +111,12 @@ function App() {
   );
 }
 
-// Wrap App in HashRouter to make hooks like useNavigate available
+// Wrap App in HashRouter and LanguageProvider
 const AppWrapper = () => (
     <HashRouter>
+      <LanguageProvider>
         <App />
+      </LanguageProvider>
     </HashRouter>
 );
 

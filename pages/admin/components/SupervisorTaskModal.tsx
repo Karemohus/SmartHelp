@@ -4,6 +4,7 @@ import { Task, Attachment } from '../../../types';
 import AttachmentInput from '../../../components/AttachmentInput';
 import AttachmentPreview from '../../../components/AttachmentPreview';
 import CheckCircleIcon from '../../../components/icons/CheckCircleIcon';
+import { useLanguage } from '../../../context/LanguageContext';
 
 interface SupervisorTaskModalProps {
     task: Task;
@@ -12,6 +13,7 @@ interface SupervisorTaskModalProps {
 }
 
 const SupervisorTaskModal: React.FC<SupervisorTaskModalProps> = ({ task, onClose, onConfirm }) => {
+    const { t } = useLanguage();
     const [notes, setNotes] = useState(task.supervisorNotes || '');
     const [supervisorAttachment, setSupervisorAttachment] = useState<Attachment | null>(task.supervisorAttachment || null);
 
@@ -28,12 +30,12 @@ const SupervisorTaskModal: React.FC<SupervisorTaskModalProps> = ({ task, onClose
                 
                 <div className="space-y-4 mb-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
                     <div>
-                        <p className="font-semibold text-sm text-slate-600">Description:</p>
+                        <p className="font-semibold text-sm text-slate-600">{t('description')}:</p>
                         <p className="text-slate-800 whitespace-pre-wrap">{task.description || 'No description provided.'}</p>
                     </div>
                     {task.adminAttachment && (
                         <div>
-                            <p className="font-semibold text-sm text-slate-600">Attachment from Admin:</p>
+                            <p className="font-semibold text-sm text-slate-600">{t('admins_attachment')}:</p>
                             <div className="mt-1 p-2 border rounded-md border-slate-200 bg-white">
                                 <AttachmentPreview attachment={task.adminAttachment} />
                             </div>
@@ -65,7 +67,7 @@ const SupervisorTaskModal: React.FC<SupervisorTaskModalProps> = ({ task, onClose
                 </div>
 
                 <div className="mt-8 flex justify-end gap-4">
-                    <button type="button" onClick={onClose} className="px-4 py-2 bg-slate-200 rounded-md text-sm font-medium hover:bg-slate-300 transition-colors">Cancel</button>
+                    <button type="button" onClick={onClose} className="px-4 py-2 bg-slate-200 rounded-md text-sm font-medium hover:bg-slate-300 transition-colors">{t('cancel')}</button>
                     <button 
                         onClick={handleConfirm}
                         disabled={isSubmitDisabled}

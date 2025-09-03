@@ -6,6 +6,7 @@ import { Faq, Ticket, Category, Promotion, SiteConfig, SubDepartment } from '../
 import FaqItem from '../components/FaqItem';
 import TicketForm from '../components/TicketForm';
 import PromotionModal from '../components/PromotionModal';
+import { useLanguage } from '../context/LanguageContext';
 
 interface CustomerViewProps {
   faqs: Faq[];
@@ -26,6 +27,7 @@ const CustomerView: React.FC<CustomerViewProps> = ({ faqs, tickets, categories, 
   const [submittedTicketId, setSubmittedTicketId] = useState<string | null>(null);
   const [isPromotionDismissed, setIsPromotionDismissed] = useState(false);
   const location = useLocation();
+  const { language, t } = useLanguage();
 
   const publicCategories = useMemo(() => categories.filter(c => c.isPublic), [categories]);
   const publicCategoryIds = useMemo(() => new Set(publicCategories.map(c => c.id)), [publicCategories]);
@@ -97,8 +99,10 @@ const CustomerView: React.FC<CustomerViewProps> = ({ faqs, tickets, categories, 
   }, [promotions]);
   
   const selectedCategoryName = useMemo(() => {
-      return categories.find(c => c.id === selectedCategory)?.name || 'Topics';
-  }, [categories, selectedCategory]);
+      const category = categories.find(c => c.id === selectedCategory);
+      if (!category) return t('all_topics');
+      return language === 'ar' ? category.name_ar : category.name;
+  }, [categories, selectedCategory, language, t]);
 
   return (
     <>
@@ -110,9 +114,9 @@ const CustomerView: React.FC<CustomerViewProps> = ({ faqs, tickets, categories, 
       )}
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
         <div className="text-center">
-          <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900">How can we help you?</h1>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900">{t('how_can_we_help')}</h1>
           <p className="mt-4 max-w-2xl mx-auto text-lg text-slate-600">
-            Browse our knowledge base or submit a ticket for personalized assistance.
+            {t('browse_knowledge_base')}
           </p>
         </div>
 
@@ -126,7 +130,7 @@ const CustomerView: React.FC<CustomerViewProps> = ({ faqs, tickets, categories, 
                   : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
               }`}
             >
-              All Topics
+              {t('all_topics')}
             </button>
             {publicCategories.map((category) => (
               <button
@@ -138,7 +142,7 @@ const CustomerView: React.FC<CustomerViewProps> = ({ faqs, tickets, categories, 
                     : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
                 }`}
               >
-                {category.name}
+                {language === 'ar' ? category.name_ar : category.name}
               </button>
             ))}
           </div>
@@ -153,7 +157,7 @@ const CustomerView: React.FC<CustomerViewProps> = ({ faqs, tickets, categories, 
                     : 'bg-white text-slate-600 hover:bg-slate-200 border border-slate-300'
                 }`}
                 >
-                All {selectedCategoryName}
+                {t('all')} {selectedCategoryName}
                 </button>
                 {subDepartmentsForCategory.map((subDept) => (
                 <button
@@ -165,7 +169,7 @@ const CustomerView: React.FC<CustomerViewProps> = ({ faqs, tickets, categories, 
                         : 'bg-white text-slate-600 hover:bg-slate-200 border border-slate-300'
                     }`}
                 >
-                    {subDept.name}
+                    {language === 'ar' ? subDept.name_ar : subDept.name}
                 </button>
                 ))}
             </div>
@@ -181,8 +185,8 @@ const CustomerView: React.FC<CustomerViewProps> = ({ faqs, tickets, categories, 
               </div>
             ) : (
               <div className="text-center py-12 px-6 bg-white rounded-lg shadow-sm border border-slate-200">
-                  <h3 className="text-xl font-semibold text-slate-700">No FAQs found</h3>
-                  <p className="text-slate-500 mt-2">There are no FAQs for this topic. Try selecting a different filter.</p>
+                  <h3 className="text-xl font-semibold text-slate-700">{t('no_faqs_found')}</h3>
+                  <p className="text-slate-500 mt-2">{t('no_faqs_for_topic')}</p>
               </div>
             )}
           </div>
@@ -191,9 +195,9 @@ const CustomerView: React.FC<CustomerViewProps> = ({ faqs, tickets, categories, 
         <div className="max-w-4xl mx-auto">
           {submittedTicketId ? (
             <div className="mt-12 p-8 bg-green-50 rounded-lg shadow-lg border border-green-200 text-center animate-scale-in">
-              <h3 className="text-2xl font-bold text-green-800 mb-2">Ticket Submitted Successfully!</h3>
-              <p className="text-green-700 mb-4">Your ticket has been received. Our team will get back to you shortly.</p>
-              <p className="text-slate-600">Your reference number is:</p>
+              <h3 className="text-2xl font-bold text-green-800 mb-2">{t('ticket_submitted_successfully')}</h3>
+              <p className="text-green-700 mb-4">{t('ticket_received_shortly')}</p>
+              <p className="text-slate-600">{t('your_reference_number_is')}</p>
               <p className="text-2xl font-mono bg-green-100 text-green-900 inline-block px-4 py-2 rounded-md mt-2">
                 {submittedTicketId}
               </p>

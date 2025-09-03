@@ -1,4 +1,5 @@
 
+
 import { GoogleGenAI, Type } from "@google/genai";
 import { Faq } from "../types";
 
@@ -13,12 +14,15 @@ if (!apiKey) {
 
 const ai = new GoogleGenAI({ apiKey });
 
-export const getSuggestedFaqs = async (userQuestion: string, faqs: Faq[], categoryContext?: string): Promise<number[]> => {
+export const getSuggestedFaqs = async (userQuestion: string, faqs: Faq[], categoryContext?: string, lang: 'en' | 'ar' = 'en'): Promise<number[]> => {
   if (!apiKey) {
     return [];
   }
 
-  const simplifiedFaqs = faqs.map(faq => ({ id: faq.id, question: faq.question }));
+  const simplifiedFaqs = faqs.map(faq => ({ 
+    id: faq.id, 
+    question: lang === 'ar' ? faq.question_ar : faq.question 
+  }));
 
   const contextPrompt = categoryContext
     ? `For extra context, here is some general information about the selected category: "${categoryContext}"`

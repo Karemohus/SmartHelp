@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { EmployeeRequest, User, UserRole, ToastMessage } from '../../types';
 import RejectionModal from './components/RejectionModal';
+import { useLanguage } from '../../context/LanguageContext';
 
 interface ManageStaffRequestsProps {
     employeeRequests: EmployeeRequest[];
@@ -95,6 +96,7 @@ const AddDriverForm: React.FC<{
 };
 
 const ManageStaffRequests: React.FC<ManageStaffRequestsProps> = ({ employeeRequests, setEmployeeRequests, users, setUsers, loggedInUser, addToast, canApprove }) => {
+    const { t } = useLanguage();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [employeeId, setEmployeeId] = useState('');
@@ -249,15 +251,15 @@ const ManageStaffRequests: React.FC<ManageStaffRequestsProps> = ({ employeeReque
             <div className="space-y-8">
                 {rejectingRequest && <RejectionModal onClose={() => setRejectingRequest(null)} onSubmit={handleRejectSubmit} />}
                 <div className="bg-white p-6 rounded-lg shadow">
-                    <h3 className="text-xl font-bold text-slate-800 mb-4">Pending Employee Requests</h3>
+                    <h3 className="text-xl font-bold text-slate-800 mb-4">{t('pending_employee_requests')}</h3>
                     <div className="overflow-x-auto border border-slate-200 rounded-lg">
                         <table className="min-w-full divide-y divide-slate-200">
                              <thead className="bg-slate-50">
                                 <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Requested User</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Requested By</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Date</th>
-                                    <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Actions</th>
+                                    <th className="px-6 py-3 text-start text-xs font-medium text-slate-500 uppercase tracking-wider">{t('requested_user')}</th>
+                                    <th className="px-6 py-3 text-start text-xs font-medium text-slate-500 uppercase tracking-wider">{t('requested_by')}</th>
+                                    <th className="px-6 py-3 text-start text-xs font-medium text-slate-500 uppercase tracking-wider">{t('date')}</th>
+                                    <th className="px-6 py-3 text-end text-xs font-medium text-slate-500 uppercase tracking-wider">{t('actions')}</th>
                                 </tr>
                             </thead>
                              <tbody className="bg-white divide-y divide-slate-200">
@@ -266,28 +268,28 @@ const ManageStaffRequests: React.FC<ManageStaffRequestsProps> = ({ employeeReque
                                         <td className="px-6 py-4 whitespace-nowrap text-sm font-semibold text-slate-900">{req.newEmployeeUsername}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">{userMap.get(req.requestedBySupervisorId) || 'Unknown User'}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">{new Date(req.createdAt).toLocaleDateString()}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                                            <button onClick={() => handleApprove(req)} className="px-3 py-1 bg-green-600 text-white text-xs font-semibold rounded-md hover:bg-green-700">Approve</button>
-                                            <button onClick={() => setRejectingRequest(req)} className="px-3 py-1 bg-red-600 text-white text-xs font-semibold rounded-md hover:bg-red-700">Reject</button>
+                                        <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium space-x-2">
+                                            <button onClick={() => handleApprove(req)} className="px-3 py-1 bg-green-600 text-white text-xs font-semibold rounded-md hover:bg-green-700">{t('approve')}</button>
+                                            <button onClick={() => setRejectingRequest(req)} className="px-3 py-1 bg-red-600 text-white text-xs font-semibold rounded-md hover:bg-red-700">{t('reject')}</button>
                                         </td>
                                     </tr>
                                 )) : (
-                                    <tr><td colSpan={4} className="text-center py-10 text-slate-500 italic">No pending requests.</td></tr>
+                                    <tr><td colSpan={4} className="text-center py-10 text-slate-500 italic">{t('no_pending_requests')}</td></tr>
                                 )}
                             </tbody>
                         </table>
                     </div>
                 </div>
                  <div className="bg-white p-6 rounded-lg shadow">
-                    <h3 className="text-xl font-bold text-slate-800 mb-4">Resolved Requests</h3>
+                    <h3 className="text-xl font-bold text-slate-800 mb-4">{t('resolved_requests')}</h3>
                     <div className="overflow-x-auto border border-slate-200 rounded-lg">
                        <table className="min-w-full divide-y divide-slate-200">
                              <thead className="bg-slate-50">
                                 <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Status</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Requested User</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Resolved By</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Details</th>
+                                    <th className="px-6 py-3 text-start text-xs font-medium text-slate-500 uppercase tracking-wider">{t('status')}</th>
+                                    <th className="px-6 py-3 text-start text-xs font-medium text-slate-500 uppercase tracking-wider">{t('requested_user')}</th>
+                                    <th className="px-6 py-3 text-start text-xs font-medium text-slate-500 uppercase tracking-wider">{t('resolved_by')}</th>
+                                    <th className="px-6 py-3 text-start text-xs font-medium text-slate-500 uppercase tracking-wider">{t('details')}</th>
                                 </tr>
                             </thead>
                              <tbody className="bg-white divide-y divide-slate-200">
@@ -297,11 +299,11 @@ const ManageStaffRequests: React.FC<ManageStaffRequestsProps> = ({ employeeReque
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">{req.newEmployeeUsername}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">{userMap.get(req.resolvedByAdminId || '') || 'N/A'}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
-                                            {req.rejectionReason ? `Reason: ${req.rejectionReason}`: `Approved on ${new Date(req.resolvedAt!).toLocaleDateString()}`}
+                                            {req.rejectionReason ? t('reason').replace('{reason}', req.rejectionReason) : t('approved_on').replace('{date}', new Date(req.resolvedAt!).toLocaleDateString())}
                                         </td>
                                     </tr>
                                 )) : (
-                                    <tr><td colSpan={4} className="text-center py-10 text-slate-500 italic">No resolved requests.</td></tr>
+                                    <tr><td colSpan={4} className="text-center py-10 text-slate-500 italic">{t('no_resolved_requests')}</td></tr>
                                 )}
                             </tbody>
                         </table>
@@ -385,12 +387,12 @@ const ManageStaffRequests: React.FC<ManageStaffRequestsProps> = ({ employeeReque
                         <table className="min-w-full divide-y divide-slate-200">
                                 <thead className="bg-slate-50">
                                 <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Status</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Requested Username</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Requested Designation</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Requested Employee ID</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Date</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Details</th>
+                                    <th className="px-6 py-3 text-start text-xs font-medium text-slate-500 uppercase tracking-wider">Status</th>
+                                    <th className="px-6 py-3 text-start text-xs font-medium text-slate-500 uppercase tracking-wider">Requested Username</th>
+                                    <th className="px-6 py-3 text-start text-xs font-medium text-slate-500 uppercase tracking-wider">Requested Designation</th>
+                                    <th className="px-6 py-3 text-start text-xs font-medium text-slate-500 uppercase tracking-wider">Requested Employee ID</th>
+                                    <th className="px-6 py-3 text-start text-xs font-medium text-slate-500 uppercase tracking-wider">Date</th>
+                                    <th className="px-6 py-3 text-start text-xs font-medium text-slate-500 uppercase tracking-wider">Details</th>
                                 </tr>
                             </thead>
                                 <tbody className="bg-white divide-y divide-slate-200">

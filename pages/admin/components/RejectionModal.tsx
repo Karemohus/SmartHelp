@@ -1,5 +1,6 @@
 
 import React, { useState } from 'react';
+import { useLanguage } from '../../../context/LanguageContext';
 
 interface RejectionModalProps {
     onClose: () => void;
@@ -8,6 +9,7 @@ interface RejectionModalProps {
 
 const RejectionModal: React.FC<RejectionModalProps> = ({ onClose, onSubmit }) => {
     const [reason, setReason] = useState('');
+    const { t } = useLanguage();
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -31,8 +33,8 @@ const RejectionModal: React.FC<RejectionModalProps> = ({ onClose, onSubmit }) =>
                         required
                     />
                     <div className="mt-6 flex justify-end gap-4">
-                        <button type="button" onClick={onClose} className="px-4 py-2 bg-slate-200 rounded-md text-sm font-medium hover:bg-slate-300">Cancel</button>
-                        <button type="submit" className="px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700">Reject Request</button>
+                        <button type="button" onClick={onClose} className="px-4 py-2 bg-slate-200 rounded-md text-sm font-medium hover:bg-slate-300">{t('cancel')}</button>
+                        <button type="submit" className="px-4 py-2 bg-red-600 text-white rounded-md text-sm font-medium hover:bg-red-700">{t('reject')} Request</button>
                     </div>
                 </form>
             </div>

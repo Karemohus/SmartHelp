@@ -1,10 +1,10 @@
 
 
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import TicketIcon from '../components/icons/TicketIcon';
 import { User } from '../types';
+import { useLanguage } from '../context/LanguageContext';
 
 interface LoginPageProps {
   onLogin: (username: string, password: string) => boolean;
@@ -16,6 +16,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,7 +25,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
     if (success) {
       navigate('/admin');
     } else {
-      setError('Incorrect username or password. Please try again.');
+      setError(t('incorrect_username_or_password'));
       setPassword('');
     }
   };
@@ -37,16 +38,16 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
             <TicketIcon className="h-12 w-12 text-blue-600" />
           </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-slate-900">
-            Admin & Supervisor Login
+            {t('admin_supervisor_login')}
           </h2>
           <p className="mt-2 text-center text-sm text-slate-600">
-            Access your dashboard
+            {t('access_your_dashboard')}
           </p>
         </div>
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div>
             <label htmlFor="username" className="block text-sm font-medium text-slate-700">
-              Username
+              {t('username')}
             </label>
             <div className="mt-1">
               <input
@@ -64,7 +65,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
 
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-slate-700">
-              Password
+              {t('password')}
             </label>
             <div className="mt-1">
               <input
@@ -81,7 +82,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
           </div>
           
           {error && (
-            <div className="bg-red-50 border-l-4 border-red-400 p-4 rounded-md">
+            <div className="bg-red-50 border-s-4 border-red-400 p-4 rounded-md">
                 <div className="flex">
                     <div className="py-1">
                         <p className="text-sm text-red-700">{error}</p>
@@ -95,7 +96,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
               type="submit"
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mt-6"
             >
-              Sign in
+              {t('sign_in')}
             </button>
           </div>
         </form>

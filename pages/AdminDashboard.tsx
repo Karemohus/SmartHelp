@@ -19,6 +19,7 @@ import CheckCircleIcon from '../components/icons/CheckCircleIcon';
 import MegaphoneIcon from '../components/icons/MegaphoneIcon';
 import DocumentDuplicateIcon from '../components/icons/DocumentDuplicateIcon';
 import CarIcon from '../components/icons/CarIcon';
+import { useLanguage } from '../context/LanguageContext';
 
 // Import newly created modular components
 import AnalyticsOverview from './admin/AnalyticsOverview';
@@ -84,6 +85,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
 }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t, language } = useLanguage();
   
   const [isFaqModalOpen, setIsFaqModalOpen] = useState(false);
   const [editingFaq, setEditingFaq] = useState<Faq | null>(null);
@@ -284,55 +286,55 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
   const deleteFaq = (id: number) => {
     requestConfirm(
-        'Confirm Deletion',
-        'Are you sure you want to delete this FAQ?',
+        t('confirm_deletion'),
+        t('are_you_sure_delete_faq'),
         () => {
             setFaqs(prev => prev.filter(f => f.id !== id));
-            addToast('FAQ deleted successfully.', 'success');
+            addToast(t('faq_deleted_successfully'), 'success');
         },
-        'Yes, Delete'
+        t('yes_delete')
     );
   };
 
   const handleDeleteEmployee = (employeeId: string) => {
     const hasOpenTasks = tasks.some(t => t.assignedEmployeeId === employeeId && t.status !== 'Completed');
     if (hasOpenTasks) {
-        window.alert("Cannot delete employee. They have pending or active tasks. Please reassign or complete their tasks first.");
+        window.alert(t('cannot_delete_employee_tasks'));
         return;
     }
     
     const hasAssignedTickets = tickets.some(t => t.assignedEmployeeId === employeeId && t.status !== 'Closed');
     if (hasAssignedTickets) {
-         window.alert("Cannot delete employee. They have open tickets assigned to them. Please reassign their tickets first.");
+         window.alert(t('cannot_delete_employee_tickets'));
         return;
     }
 
     requestConfirm(
-        'Confirm Employee Deletion',
-        'Are you sure you want to permanently delete this employee? This action cannot be undone.',
+        t('confirm_employee_deletion'),
+        t('are_you_sure_delete_employee'),
         () => {
             setUsers(prev => prev.filter(u => u.id !== employeeId));
-            addToast('Employee deleted successfully.', 'success');
+            addToast(t('employee_deleted_successfully'), 'success');
         },
-        'Yes, Delete'
+        t('yes_delete')
     );
   };
 
   const handleCopyLink = (categoryId: string) => {
     const category = categories.find(c => c.id === categoryId);
     if (!category) {
-        addToast('Could not find category to copy link.', 'error');
+        addToast(t('failed_to_copy_link'), 'error');
         return;
     }
     const linkIdentifier = category.slug || category.id;
     const url = `${window.location.origin}${window.location.pathname}#/category/${linkIdentifier}`;
     navigator.clipboard.writeText(url).then(() => {
       setCopiedLinkId(categoryId);
-      addToast('Link copied to clipboard!', 'info');
+      addToast(t('link_copied'), 'info');
       setTimeout(() => setCopiedLinkId(null), 2500);
     }, (err) => {
       console.error('Failed to copy link: ', err);
-      addToast('Failed to copy link.', 'error');
+      addToast(t('failed_to_copy_link'), 'error');
     });
   };
 
@@ -356,10 +358,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
       };
       if (isEditing) {
           setFaqs(faqs.map(f => f.id === updatedFaq.id ? updatedFaq : f));
-          addToast('FAQ updated successfully!', 'success');
+          addToast(t('faq_updated_successfully'), 'success');
       } else {
           setFaqs([...faqs, updatedFaq]);
-          addToast('FAQ added successfully!', 'success');
+          addToast(t('faq_added_successfully'), 'success');
       }
       setIsFaqModalOpen(false);
       setEditingFaq(null);
@@ -372,16 +374,19 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const handleSaveEmployeePermissions = (updatedUser: User) => {
       setUsers(users.map(u => u.id === updatedUser.id ? updatedUser : u));
       setEditingEmployee(null);
-      addToast(`Permissions for ${updatedUser.username} updated.`, 'success');
+      addToast(t('permissions_updated_for').replace('{username}', updatedUser.username), 'success');
   };
 
   const canAddFaq = isFullAdmin || isSupervisor || employeePermissions?.canAddFaqs;
 
   const handleCreateFaqFromSuggestion = (subject: string, categoryId: string) => {
+      // Fix: Add missing question_ar and answer_ar properties to match the Faq type.
       setEditingFaq({
           id: 0, // Placeholder ID for new FAQ
           question: subject,
+          question_ar: subject, // Admin should translate this
           answer: '', // Admin should fill this in
+          answer_ar: '', // Admin should fill this in
           categoryId: categoryId,
           createdAt: '',
           updatedAt: '',
@@ -401,18 +406,18 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   };
 
   const navItemsUnfiltered: Array<{ id: AdminTab; label: string; icon: JSX.Element; notificationCount?: number; isVisible: boolean; }> = [
-      { id: 'dashboard', label: 'Dashboard', icon: <BriefcaseIcon className="w-5 h-5"/>, notificationCount: 0, isVisible: (isFullAdmin || isSupervisor || employeePermissions?.canViewAnalytics) },
-      { id: 'faqs', label: 'FAQs', icon: <ClipboardListIcon className="w-5 h-5"/>, notificationCount: 0, isVisible: true },
-      { id: 'tickets', label: 'Tickets', icon: <TicketIcon className="w-5 h-5"/>, notificationCount: openTicketsCount, isVisible: (isFullAdmin || isSupervisor || employeePermissions?.canHandleTickets) },
-      { id: 'tasks', label: 'Tasks', icon: <CheckCircleIcon className="w-5 h-5"/>, notificationCount: openTasksCount + pendingReviewTasksCount, isVisible: (isFullAdmin || isSupervisor || employeePermissions?.canHandleTasks) },
-      { id: 'vehicles', label: 'Vehicles', icon: <CarIcon className="w-5 h-5" />, notificationCount: 0, isVisible: isFullAdmin || isSupervisor },
-      { id: 'manageTeam', label: 'Manage Team', icon: <UsersIcon className="w-5 h-5"/>, notificationCount: unacknowledgedApprovalsCount, isVisible: isSupervisor },
-      { id: 'subDepartments', label: 'Sub-departments', icon: <DocumentDuplicateIcon className="w-5 h-5" />, notificationCount: 0, isVisible: isSupervisor },
-      { id: 'staffRequests', label: 'Staff Requests', icon: <UserPlusIcon className="w-5 h-5"/>, notificationCount: hasAdminPermission('approve_staff_requests') || hasAdminPermission('manage_staff_directly') ? pendingStaffRequestsCount : 0, isVisible: (hasAdminPermission('approve_staff_requests') || hasAdminPermission('manage_staff_directly') || isSupervisor) },
-      { id: 'promotions', label: 'Promotions', icon: <MegaphoneIcon className="w-5 h-5"/>, notificationCount: 0, isVisible: hasAdminPermission('manage_promotions') },
-      { id: 'categories', label: 'Categories', icon: <MagnifyingGlassCircleIcon className="w-5 h-5"/>, notificationCount: 0, isVisible: hasAdminPermission('manage_categories') },
-      { id: 'supervisors', label: 'Supervisors', icon: <UsersIcon className="w-5 h-5"/>, notificationCount: 0, isVisible: hasAdminPermission('manage_supervisors') },
-      { id: 'userActivity', label: 'User Activity', icon: <EyeIcon className="w-5 h-5"/>, notificationCount: 0, isVisible: hasAdminPermission('view_user_activity') },
+      { id: 'dashboard', label: t('nav_dashboard'), icon: <BriefcaseIcon className="w-5 h-5"/>, notificationCount: 0, isVisible: (isFullAdmin || isSupervisor || employeePermissions?.canViewAnalytics) },
+      { id: 'faqs', label: t('nav_faqs'), icon: <ClipboardListIcon className="w-5 h-5"/>, notificationCount: 0, isVisible: true },
+      { id: 'tickets', label: t('nav_tickets'), icon: <TicketIcon className="w-5 h-5"/>, notificationCount: openTicketsCount, isVisible: (isFullAdmin || isSupervisor || employeePermissions?.canHandleTickets) },
+      { id: 'tasks', label: t('nav_tasks'), icon: <CheckCircleIcon className="w-5 h-5"/>, notificationCount: openTasksCount + pendingReviewTasksCount, isVisible: (isFullAdmin || isSupervisor || employeePermissions?.canHandleTasks) },
+      { id: 'vehicles', label: t('nav_vehicles'), icon: <CarIcon className="w-5 h-5" />, notificationCount: 0, isVisible: isFullAdmin || isSupervisor },
+      { id: 'manageTeam', label: t('nav_manage_team'), icon: <UsersIcon className="w-5 h-5"/>, notificationCount: unacknowledgedApprovalsCount, isVisible: isSupervisor },
+      { id: 'subDepartments', label: t('nav_sub_departments'), icon: <DocumentDuplicateIcon className="w-5 h-5" />, notificationCount: 0, isVisible: isSupervisor },
+      { id: 'staffRequests', label: t('nav_staff_requests'), icon: <UserPlusIcon className="w-5 h-5"/>, notificationCount: hasAdminPermission('approve_staff_requests') || hasAdminPermission('manage_staff_directly') ? pendingStaffRequestsCount : 0, isVisible: (hasAdminPermission('approve_staff_requests') || hasAdminPermission('manage_staff_directly') || isSupervisor) },
+      { id: 'promotions', label: t('nav_promotions'), icon: <MegaphoneIcon className="w-5 h-5"/>, notificationCount: 0, isVisible: hasAdminPermission('manage_promotions') },
+      { id: 'categories', label: t('nav_categories'), icon: <MagnifyingGlassCircleIcon className="w-5 h-5"/>, notificationCount: 0, isVisible: hasAdminPermission('manage_categories') },
+      { id: 'supervisors', label: t('nav_supervisors'), icon: <UsersIcon className="w-5 h-5"/>, notificationCount: 0, isVisible: hasAdminPermission('manage_supervisors') },
+      { id: 'userActivity', label: t('nav_user_activity'), icon: <EyeIcon className="w-5 h-5"/>, notificationCount: 0, isVisible: hasAdminPermission('view_user_activity') },
   ];
   
   const navItems = navItemsUnfiltered.filter(item => item.isVisible);
@@ -420,7 +425,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
   if (isFullAdmin) {
     navItems.push({ 
         id: 'settings', 
-        label: 'Settings & Data', 
+        label: t('nav_settings'), 
         icon: <LockClosedIcon className="w-5 h-5"/>, 
         isVisible: true,
         notificationCount: 0,
@@ -647,16 +652,16 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   <button
                     key={item.id}
                     onClick={() => handleTabClick(item.id)}
-                    className={`w-full text-left flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                    className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${ language === 'ar' ? 'text-right' : 'text-left' } ${
                       activeTab === item.id 
                       ? 'bg-blue-100 text-blue-700' 
                       : 'text-slate-700 hover:bg-slate-200'
                     }`}
                   >
                     {item.icon}
-                    <span className="ml-3 flex-1">{item.label}</span>
+                    <span className="mx-3 flex-1">{item.label}</span>
                     {item.notificationCount && item.notificationCount > 0 ? (
-                      <span className="ml-auto inline-block py-0.5 px-2.5 text-xs font-semibold text-white bg-red-500 rounded-full">
+                      <span className="ms-auto inline-block py-0.5 px-2.5 text-xs font-semibold text-white bg-red-500 rounded-full">
                         {item.notificationCount}
                       </span>
                     ) : null}
@@ -668,7 +673,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
               {(isSupervisor || isEmployee) && (
                 <div className="mb-6 p-4 bg-white rounded-lg shadow-sm border border-slate-200">
                     <h3 className="text-lg font-bold text-slate-800">{loggedInUser.username}</h3>
-                    {loggedInUser.designation && <p className="text-sm text-slate-500">{loggedInUser.designation}</p>}
+                    {loggedInUser.designation && <p className="text-sm text-slate-500">{language === 'ar' ? loggedInUser.designation_ar : loggedInUser.designation}</p>}
                 </div>
               )}
               {renderContent()}

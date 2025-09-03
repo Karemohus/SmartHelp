@@ -1,24 +1,23 @@
-
 import { TicketStatus, EmployeePermission, AdminPermission } from '../../types';
 
-export const employeePermissionLabels: Record<EmployeePermission, string> = {
-    handle_tickets: 'Handle Tickets & Complaints',
-    handle_tasks: 'Handle Assigned Tasks',
-    add_faqs: 'Add FAQs',
-    view_analytics: 'View Analytics Dashboard',
-    close_tickets: 'Close Answered Tickets'
-};
+export const getEmployeePermissionLabels = (t: (key: string) => string): Record<EmployeePermission, string> => ({
+    handle_tickets: t('perm_handle_tickets'),
+    handle_tasks: t('perm_handle_tasks'),
+    add_faqs: t('perm_add_faqs'),
+    view_analytics: t('perm_view_analytics'),
+    close_tickets: t('perm_close_tickets')
+});
 
-export const adminPermissionLabels: Record<AdminPermission, { title: string, description: string }> = {
-    view_all_dashboards: { title: 'View All Dashboards', description: 'Access analytics & performance for all categories and teams.' },
-    manage_categories: { title: 'Manage Categories', description: 'Create, edit, and delete all support categories.' },
-    manage_promotions: { title: 'Manage Promotions', description: 'Create and manage site-wide promotions for customers.' },
-    approve_staff_requests: { title: 'Approve Staff Requests', description: 'Approve or reject new employee account requests from other supervisors.' },
-    manage_site_config: { title: 'Manage Site Configuration', description: 'Edit site name, logo, and global settings.' },
-    manage_supervisors: { title: 'Manage Supervisors', description: 'Add, edit, or delete other supervisor accounts.' },
-    view_user_activity: { title: 'View User Activity', description: 'Search for and view detailed activity logs for any employee or supervisor.' },
-    manage_staff_directly: { title: 'Manage Staff Directly', description: 'Create employee accounts directly, bypassing the admin approval process.' },
-};
+export const getAdminPermissionLabels = (t: (key: string) => string): Record<AdminPermission, { title: string, description: string }> => ({
+    view_all_dashboards: { title: t('perm_view_all_dashboards_title'), description: t('perm_view_all_dashboards_desc') },
+    manage_categories: { title: t('perm_manage_categories_title'), description: t('perm_manage_categories_desc') },
+    manage_promotions: { title: t('perm_manage_promotions_title'), description: t('perm_manage_promotions_desc') },
+    approve_staff_requests: { title: t('perm_approve_staff_requests_title'), description: t('perm_approve_staff_requests_desc') },
+    manage_site_config: { title: t('perm_manage_site_config_title'), description: t('perm_manage_site_config_desc') },
+    manage_supervisors: { title: t('perm_manage_supervisors_title'), description: t('perm_manage_supervisors_desc') },
+    view_user_activity: { title: t('perm_view_user_activity_title'), description: t('perm_view_user_activity_desc') },
+    manage_staff_directly: { title: t('perm_manage_staff_directly_title'), description: t('perm_manage_staff_directly_desc') },
+});
 
 export const formatDuration = (ms: number): string => {
     if (ms < 0) ms = 0;
